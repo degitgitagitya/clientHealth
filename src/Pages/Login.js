@@ -7,13 +7,14 @@ import LoginRegisterTemplate from "../Components/LoginRegisterTemplate";
 function Login(props) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [warning, setWarning] = useState(null);
   const auth = useContext(AuthContext);
 
   const authUser = () => {
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
 
-    const raw = JSON.stringify({ username: "detya", password: "password" });
+    const raw = JSON.stringify({ username: username, password: password });
 
     const requestOptions = {
       method: "POST",
@@ -26,7 +27,7 @@ function Login(props) {
       .then((response) => response.json())
       .then((data) => {
         if (Object.entries(data).length === 0 && data.constructor === Object) {
-          this.toggleError("Wrong Username / Password");
+          setWarning("Wrong Username / Password");
         } else {
           auth.changeAuthToTrue(data);
           props.history.push("/home");
@@ -58,6 +59,7 @@ function Login(props) {
           className="form-control"
         />
       </div>
+      <p className="text-danger">{warning}</p>
       <div>
         <button onClick={authUser} className="btn btn-info form-control mb-2">
           Login

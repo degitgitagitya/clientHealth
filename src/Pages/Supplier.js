@@ -4,16 +4,13 @@ import ReactModal from "react-modal";
 import Container from "../Components/Container";
 import ReactTable from "../Components/ReactTable";
 
-function Home() {
+function Supplier() {
   const [body, setBody] = useState([]);
   const [edit, setEdit] = useState(false);
   const [showModal, setShowModal] = useState(false);
-  const [listSupplier, setListSupplier] = useState([]);
-  const [code, setCode] = useState("");
-  const [name, setName] = useState("");
-  const [information, setInformation] = useState("");
-  const [supplier, setSupplier] = useState(1);
-  const [idDrug, setIdDrug] = useState("");
+  const [kode, setKode] = useState("");
+  const [nama, setNama] = useState("");
+  const [idSupplier, setIdSupplier] = useState("");
 
   const head = [
     {
@@ -34,35 +31,14 @@ function Home() {
           sortType: "basic",
         },
         {
-          Header: "Keterangan",
-          accessor: "information",
-          sortType: "basic",
-        },
-        {
-          Header: "Supplier",
-          Cell: ({ row }) => (
-            <div>
-              {listSupplier.filter(
-                (data) => data.id === row.original.id_supplier
-              ).length !== 0
-                ? listSupplier.filter(
-                    (data) => data.id === row.original.id_supplier
-                  )[0].name
-                : ""}
-            </div>
-          ),
-        },
-        {
           Header: "Action",
           Cell: ({ row }) => (
             <div>
               <button
                 onClick={() => {
-                  setIdDrug(row.original.id);
-                  setCode(row.original.code);
-                  setName(row.original.name);
-                  setInformation(row.original.information);
-                  setSupplier(row.original.id_supplier);
+                  setIdSupplier(row.original.id);
+                  setKode(row.original.code);
+                  setNama(row.original.name);
                   setEdit(true);
                   setShowModal(true);
                 }}
@@ -72,7 +48,7 @@ function Home() {
               </button>
               <button
                 onClick={() => {
-                  deleteDrug(row.original.id);
+                  deleteSupplier(row.original.id);
                 }}
                 className="btn btn-danger"
               >
@@ -85,19 +61,6 @@ function Home() {
     },
   ];
 
-  const fetchObat = () => {
-    const requestOptions = {
-      method: "GET",
-      redirect: "follow",
-    };
-    fetch(`${process.env.REACT_APP_API_URL}/drug`, requestOptions)
-      .then((response) => response.json())
-      .then((result) => {
-        setBody(result);
-      })
-      .catch((error) => console.log("error", error));
-  };
-
   const fetchSupplier = () => {
     const requestOptions = {
       method: "GET",
@@ -107,21 +70,16 @@ function Home() {
     fetch(`${process.env.REACT_APP_API_URL}/supplier`, requestOptions)
       .then((response) => response.json())
       .then((result) => {
-        setListSupplier(result);
+        setBody(result);
       })
       .catch((error) => console.log("error", error));
   };
 
-  const addObat = () => {
+  const addSupplier = () => {
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
 
-    const raw = JSON.stringify({
-      code: code,
-      name: name,
-      information: information,
-      id_supplier: supplier,
-    });
+    const raw = JSON.stringify({ code: kode, name: nama });
 
     const requestOptions = {
       method: "POST",
@@ -130,25 +88,19 @@ function Home() {
       redirect: "follow",
     };
 
-    fetch(`${process.env.REACT_APP_API_URL}/drug`, requestOptions)
+    fetch(`${process.env.REACT_APP_API_URL}/supplier`, requestOptions)
       .then((response) => response.json())
       .then((result) => {
-        fetchObat();
-        setShowModal(false);
+        fetchSupplier();
       })
       .catch((error) => console.log("error", error));
   };
 
-  const updateObat = () => {
+  const updateSupplier = () => {
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
 
-    const raw = JSON.stringify({
-      code: code,
-      id_supplier: supplier,
-      information: information,
-      name: name,
-    });
+    const raw = JSON.stringify({ code: kode, name: nama });
 
     const requestOptions = {
       method: "PUT",
@@ -157,49 +109,52 @@ function Home() {
       redirect: "follow",
     };
 
-    fetch(`${process.env.REACT_APP_API_URL}/drug/${idDrug}`, requestOptions)
+    fetch(
+      `${process.env.REACT_APP_API_URL}/supplier/${idSupplier}`,
+      requestOptions
+    )
       .then((response) => response.json())
       .then((result) => {
-        fetchObat();
+        fetchSupplier();
+        setShowModal(false);
       })
       .catch((error) => console.log("error", error));
   };
 
-  const deleteDrug = (id) => {
+  const deleteSupplier = (id) => {
     const requestOptions = {
       method: "DELETE",
       redirect: "follow",
     };
 
-    fetch(`${process.env.REACT_APP_API_URL}/drug/${id}`, requestOptions)
+    fetch(`${process.env.REACT_APP_API_URL}/supplier/${id}`, requestOptions)
       .then((response) => response.json())
       .then((result) => {
-        fetchObat();
+        fetchSupplier();
       })
       .catch((error) => console.log("error", error));
   };
 
   useEffect(() => {
-    fetchObat();
     fetchSupplier();
   }, []);
 
   return (
-    <Container title="Home" desc="Data Obat" icon="fa-home">
+    <Container title="Supplier" desc="Data Supplier" icon="fa-box">
       {/* Modal */}
       <ReactModal
         isOpen={showModal}
         className="custom-modal"
         overlayClassName="custom-modal-overlay"
       >
-        <h5>Tambah Obat</h5>
+        <h5>Tambah Supplier</h5>
 
         <div>
           <div className="mb-2">Kode</div>
           <input
-            value={code}
+            value={kode}
             onChange={(e) => {
-              setCode(e.target.value);
+              setKode(e.target.value);
             }}
             type="text"
             className="form-control"
@@ -209,64 +164,32 @@ function Home() {
         <div>
           <div className="mb-2">Nama</div>
           <input
-            value={name}
+            value={nama}
             onChange={(e) => {
-              setName(e.target.value);
+              setNama(e.target.value);
             }}
             type="text"
             className="form-control"
           />
-        </div>
-
-        <div>
-          <div className="mb-2">Keterangan</div>
-          <input
-            value={information}
-            onChange={(e) => {
-              setInformation(e.target.value);
-            }}
-            type="text"
-            className="form-control"
-          />
-        </div>
-
-        <div>
-          <div className="mb-2">Supplier</div>
-          <select
-            value={supplier}
-            onChange={(e) => {
-              setSupplier(e.target.value);
-            }}
-            className="form-control"
-          >
-            {listSupplier.map((data) => {
-              return (
-                <option value={data.id} key={data.id}>
-                  {data.name}
-                </option>
-              );
-            })}
-          </select>
         </div>
 
         <div className="d-flex justify-content-between mt-3">
           {edit ? (
             <button
-              onClick={() => {
-                updateObat();
-                setShowModal(false);
-              }}
               className="btn btn-warning"
+              onClick={() => {
+                updateSupplier();
+              }}
             >
               Edit
             </button>
           ) : (
             <button
+              className="btn btn-info"
               onClick={() => {
-                addObat();
+                addSupplier();
                 setShowModal(false);
               }}
-              className="btn btn-info"
             >
               Tambah
             </button>
@@ -287,12 +210,13 @@ function Home() {
         <div className="d-flex mb-2">
           <button
             onClick={() => {
+              setEdit(false);
               setShowModal(true);
             }}
             className="btn btn-info"
           >
             <i className="fas fa-plus mr-2"></i>
-            Tambah Obat
+            Tambah Supplier
           </button>
         </div>
         <ReactTable head={head} body={body}></ReactTable>
@@ -301,4 +225,4 @@ function Home() {
   );
 }
 
-export default Home;
+export default Supplier;

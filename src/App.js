@@ -2,11 +2,12 @@ import React from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
 import Authentication from "./Contexts/Authentication";
+import { ProtectedRoute } from "./Components/ProtectedRoute";
 
 import Login from "./Pages/Login";
 import Register from "./Pages/Register";
-import { ProtectedRoute } from "./Components/ProtectedRoute";
 import Home from "./Pages/Home";
+import Supplier from "./Pages/Supplier";
 
 function App() {
   return (
@@ -20,6 +21,10 @@ function App() {
             <Register></Register>
           </Route>
           <ProtectedRoute path="/home" component={Home}></ProtectedRoute>
+          <ProtectedRoute
+            path="/supplier"
+            component={Supplier}
+          ></ProtectedRoute>
         </Switch>
       </Authentication>
     </Router>
